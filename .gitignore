@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.eggs/
+.openconch/
+.openconch_*/
+wandb/
+results/
+*.pt
+*.pth
+.env
+.venv/
+venv/
+*.DS_Store

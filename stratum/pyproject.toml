@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "stratum"
+version = "0.1.0"
+description = "STRATUM: Stratified Recurrent Attention with Unbounded Memory"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.1.0",
+    "mamba-ssm>=2.0.0",
+    "causal-conv1d>=1.2.0",
+    "transformers>=4.38.0",
+    "einops>=0.7.0",
+    "flash-attn>=2.5.0",
+    "pyyaml>=6.0",
+    "wandb>=0.16.0",
+    "tqdm>=4.66.0",
+    "numpy>=1.24.0",
+    "datasets>=2.16.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "black>=23.0",
+    "ruff>=0.1.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["models*", "experiments*", "data*", "eval*"]

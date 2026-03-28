@@ -1,0 +1,43 @@
+# Experiment 2: Scorer Learnability
+# Budget: ~$80 (~16 GPU-hours on A100)
+# Goal: Can a 2-layer MLP learn to predict which tokens are important?
+
+model:
+  backbone: "state-spaces/mamba-130m"
+  freeze_backbone: true
+
+scorer:
+  d_model: 768
+  d_inner: 1536
+  dropout: 0.1
+  anchor_ratio: 0.005
+  temperature: 1.0
+
+training:
+  epochs: 10
+  batch_size: 8
+  lr: 3.0e-4
+  weight_decay: 0.01
+  warmup_steps: 100
+  grad_clip: 1.0
+  n_probe_positions: 50
+
+data:
+  tasks: ["passkey", "single_niah", "multi_niah", "variable_track"]
+  seq_lengths: [4096, 8192]
+  n_train_samples: 2000
+  n_eval_samples: 500
+
+eval:
+  batch_size: 4
+  eval_every_steps: 200
+  metrics: ["precision_vs_oracle", "recall_vs_oracle", "f1_vs_oracle"]
+
+hardware:
+  device: "cuda"
+  dtype: "float16"
+
+logging:
+  wandb_project: "stratum"
+  wandb_run: "exp2-scorer"
+  output_dir: "results/exp2_scorer"

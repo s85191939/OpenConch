@@ -1,0 +1,63 @@
+# Experiment 3: End-to-End Tiny STRATUM
+# Budget: ~$80 (~16 GPU-hours on A100)
+# Goal: Train a full STRATUM and compare against Mamba and Transformer baselines
+
+model:
+  backbone: "state-spaces/mamba-130m"
+  freeze_backbone: false  # finetune everything
+
+scorer:
+  d_model: 768
+  d_inner: 1536
+  dropout: 0.1
+  anchor_ratio: 0.005
+
+attention:
+  d_model: 768
+  n_heads: 8
+  dropout: 0.1
+
+memory:
+  d_model: 768
+  n_slots: 128
+  chunk_size: 512
+
+fusion:
+  d_model: 768
+  temperature: 1.0
+
+training:
+  epochs: 5
+  batch_size: 4
+  lr: 1.0e-4
+  weight_decay: 0.01
+  warmup_steps: 200
+  grad_clip: 1.0
+  scorer_lr_multiplier: 3.0  # train scorer faster than backbone
+
+data:
+  train_tasks: ["passkey", "single_niah", "multi_niah", "variable_track", "aggregate"]
+  eval_tasks: ["passkey", "single_niah", "multi_niah", "variable_track", "aggregate"]
+  seq_lengths: [8192, 16384]
+  n_train_samples: 5000
+  n_eval_samples: 500
+
+baselines:
+  run_mamba_baseline: true
+  run_transformer_baseline: true
+  transformer_model: "EleutherAI/pythia-160m"
+
+eval:
+  batch_size: 2
+  eval_every_steps: 500
+  max_new_tokens: 10
+
+hardware:
+  device: "cuda"
+  dtype: "float16"
+  gradient_checkpointing: true
+
+logging:
+  wandb_project: "stratum"
+  wandb_run: "exp3-e2e"
+  output_dir: "results/exp3_e2e"

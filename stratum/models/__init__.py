@@ -1,0 +1,1 @@
+"""STRATUM model components."""
