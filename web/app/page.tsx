@@ -1,0 +1,222 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { Conversation, Message } from "@/lib/types";
+import { getConversations, saveConversation, deleteConversation } from "@/lib/store";
+import { findRelevantMemories, createMemory, getAllMemories, removeMemory, formatMemoriesForContext } from "@/lib/memory";
+import Sidebar from "@/components/Sidebar";
+import Chat from "@/components/Chat";
+import MemoryPanel from "@/components/MemoryPanel";
+
+export default function Home() {
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [memoryPanelOpen, setMemoryPanelOpen] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+
+  // Load conversations from localStorage
+  useEffect(() => {
+    const saved = getConversations();
+    setConversations(saved);
+  }, []);
+
+  const createNewChat = useCallback(() => {
+    const newConversation: Conversation = {
+      id: crypto.randomUUID(),
+      title: "New chat",
+      messages: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    setActiveConversation(newConversation);
+  }, []);
+
+  const handleSelectConversation = useCallback((id: string) => {
+    const conv = conversations.find((c) => c.id === id);
+    if (conv) setActiveConversation(conv);
+  }, [conversations]);
+
+  const handleDeleteConversation = useCallback((id: string) => {
+    deleteConversation(id);
+    setConversations((prev) => prev.filter((c) => c.id !== id));
+    if (activeConversation?.id === id) {
+      setActiveConversation(null);
+    }
+  }, [activeConversation]);
+
+  const handleSendMessage = useCallback(async (content: string) => {
+    if (!activeConversation || isStreaming) return;
+
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content,
+      timestamp: Date.now(),
+    };
+
+    // Update conversation with user message
+    const updated = {
+      ...activeConversation,
+      messages: [...activeConversation.messages, userMessage],
+      updatedAt: Date.now(),
+    };
+
+    // Set title from first message
+    if (updated.messages.length === 1) {
+      updated.title = content.slice(0, 40) + (content.length > 40 ? "..." : "");
+    }
+
+    setActiveConversation(updated);
+    saveConversation(updated);
+    setConversations((prev) => {
+      const idx = prev.findIndex((c) => c.id === updated.id);
+      if (idx >= 0) {
+        const next = [...prev];
+        next[idx] = updated;
+        return next;
+      }
+      return [updated, ...prev];
+    });
+
+    // Get relevant memories
+    const memories = findRelevantMemories(content);
+    const memoryStrings = memories.map((m) => m.content);
+
+    // Stream assistant response
+    setIsStreaming(true);
+    const assistantMessage: Message = {
+      id: crypto.randomUUID(),
+      role: "assistant",
+      content: "",
+      timestamp: Date.now(),
+    };
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: updated.messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          memories: memoryStrings,
+        }),
+      });
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (reader) {
+        let fullText = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split("\n");
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6);
+              if (data === "[DONE]") continue;
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.text) {
+                  fullText += parsed.text;
+                  assistantMessage.content = fullText;
+
+                  const withAssistant = {
+                    ...updated,
+                    messages: [...updated.messages, { ...assistantMessage }],
+                    updatedAt: Date.now(),
+                  };
+                  setActiveConversation(withAssistant);
+                }
+              } catch { /* skip malformed chunks */ }
+            }
+          }
+        }
+
+        // Save final state
+        const finalConv = {
+          ...updated,
+          messages: [...updated.messages, assistantMessage],
+          updatedAt: Date.now(),
+        };
+        setActiveConversation(finalConv);
+        saveConversation(finalConv);
+        setConversations((prev) => {
+          const idx = prev.findIndex((c) => c.id === finalConv.id);
+          if (idx >= 0) {
+            const next = [...prev];
+            next[idx] = finalConv;
+            return next;
+          }
+          return [finalConv, ...prev];
+        });
+
+        // Extract memories from the conversation
+        try {
+          const convText = `User: ${content}\nAssistant: ${assistantMessage.content}`;
+          const memResponse = await fetch("/api/memories", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ conversation: convText }),
+          });
+          const { facts } = await memResponse.json();
+          for (const fact of facts) {
+            createMemory(fact);
+          }
+        } catch { /* memory extraction is best-effort */ }
+      }
+    } catch (error) {
+      console.error("Chat error:", error);
+      assistantMessage.content = "Sorry, something went wrong. Please try again.";
+      const errorConv = {
+        ...updated,
+        messages: [...updated.messages, assistantMessage],
+      };
+      setActiveConversation(errorConv);
+      saveConversation(errorConv);
+    } finally {
+      setIsStreaming(false);
+    }
+  }, [activeConversation, isStreaming]);
+
+  return (
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <Sidebar
+        conversations={conversations}
+        activeId={activeConversation?.id}
+        isOpen={sidebarOpen}
+        memoryCount={getAllMemories().length}
+        onNewChat={createNewChat}
+        onSelect={handleSelectConversation}
+        onDelete={handleDeleteConversation}
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
+        onToggleMemory={() => setMemoryPanelOpen(!memoryPanelOpen)}
+      />
+
+      {/* Main chat area */}
+      <Chat
+        conversation={activeConversation}
+        isStreaming={isStreaming}
+        onSendMessage={handleSendMessage}
+        onNewChat={createNewChat}
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+      />
+
+      {/* Memory panel */}
+      <MemoryPanel
+        isOpen={memoryPanelOpen}
+        onClose={() => setMemoryPanelOpen(false)}
+        memories={getAllMemories()}
+        onDelete={removeMemory}
+      />
+    </div>
+  );
+}
