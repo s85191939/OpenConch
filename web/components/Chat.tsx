@@ -54,9 +54,9 @@ export default function Chat({
       ) : (
         <>
           <MessageList messages={conversation.messages} isStreaming={isStreaming} />
-          <div className="shrink-0 w-full max-w-[680px] mx-auto px-10 pb-6 pt-2">
+          <div style={{ flexShrink: 0, width: '100%', maxWidth: 720, marginLeft: 'auto', marginRight: 'auto', padding: '8px 40px 24px 40px' }}>
             <MessageInput onSend={onSendMessage} disabled={isStreaming} />
-            <p className="text-[11px] text-gray-400 text-center mt-3 select-none">
+            <p style={{ fontSize: 11, color: '#999', textAlign: 'center', marginTop: 12, userSelect: 'none' }}>
               OpenConch can make mistakes. Memories stored in your browser.
             </p>
           </div>
