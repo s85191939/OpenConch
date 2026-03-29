@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { Message } from "@/lib/types";
-import { User, Bot } from "lucide-react";
 
 interface MessageListProps {
   messages: Message[];
@@ -18,38 +17,39 @@ export default function MessageList({ messages, isStreaming }: MessageListProps)
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
         {messages.map((message, idx) => (
-          <div key={message.id} className="flex gap-4">
-            {/* Avatar */}
-            <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                message.role === "user"
-                  ? "bg-[#2f2f2f]"
-                  : "bg-[#10a37f]"
-              }`}
-            >
-              {message.role === "user" ? (
-                <User size={16} className="text-[#ececec]" />
-              ) : (
-                <span className="text-sm">🐚</span>
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <div className="text-xs font-medium text-[#9a9a9a] mb-1">
-                {message.role === "user" ? "You" : "OpenConch"}
+          <div
+            key={message.id}
+            className="animate-fade-in-up"
+            style={{ animationDelay: `${Math.min(idx * 0.05, 0.3)}s` }}
+          >
+            {message.role === "user" ? (
+              /* User message */
+              <div className="flex justify-end">
+                <div className="max-w-[85%] bg-white/[0.07] border border-white/[0.06] rounded-2xl rounded-br-md px-5 py-3.5">
+                  <p className="text-[15px] leading-relaxed">{message.content}</p>
+                </div>
               </div>
-              <div className="message-content text-[15px] leading-relaxed whitespace-pre-wrap break-words">
-                {message.content}
-                {isStreaming &&
-                  message.role === "assistant" &&
-                  idx === messages.length - 1 && (
-                    <span className="typing-cursor" />
-                  )}
+            ) : (
+              /* Assistant message */
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#a78bfa]/20 to-[#6366f1]/20 border border-[#a78bfa]/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-sm">🐚</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[11px] font-medium text-[#a78bfa] mb-2 uppercase tracking-wider">
+                    OpenConch
+                  </div>
+                  <div className="message-content text-[15px] leading-[1.75] text-[#d4d4d8]">
+                    {message.content}
+                    {isStreaming && idx === messages.length - 1 && (
+                      <span className="typing-cursor" />
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         ))}
         <div ref={endRef} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { Conversation } from "@/lib/types";
-import { Plus, MessageSquare, Trash2, Brain, PanelLeftClose, PanelLeft } from "lucide-react";
+import { Plus, MessageSquare, Trash2, Brain, PanelLeftClose } from "lucide-react";
 
 interface SidebarProps {
   conversations: Conversation[];
@@ -29,66 +29,89 @@ export default function Sidebar({
   if (!isOpen) return null;
 
   return (
-    <div className="w-64 bg-[#171717] flex flex-col h-full border-r border-[#333]">
+    <div className="w-[280px] bg-[#0c0c0e] flex flex-col h-full border-r border-white/[0.06] relative z-10">
       {/* Header */}
-      <div className="p-3 flex items-center justify-between">
+      <div className="p-4 flex items-center gap-2">
         <button
           onClick={onNewChat}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#2a2a2a] transition-colors text-sm flex-1"
+          className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.1] transition-all duration-200 text-sm font-medium flex-1 group"
         >
-          <Plus size={16} />
-          New chat
+          <Plus size={15} className="text-[#a78bfa] group-hover:rotate-90 transition-transform duration-300" />
+          <span className="text-[#a1a1aa]">New chat</span>
         </button>
         <button
           onClick={onToggle}
-          className="p-2 rounded-lg hover:bg-[#2a2a2a] transition-colors"
+          className="p-2.5 rounded-xl hover:bg-white/[0.06] transition-colors duration-200"
         >
-          <PanelLeftClose size={16} className="text-[#9a9a9a]" />
+          <PanelLeftClose size={15} className="text-[#52525b]" />
         </button>
       </div>
 
+      {/* Section label */}
+      {conversations.length > 0 && (
+        <div className="px-5 py-2">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#3f3f46]">
+            Recent
+          </span>
+        </div>
+      )}
+
       {/* Conversation list */}
-      <div className="flex-1 overflow-y-auto px-2">
+      <div className="flex-1 overflow-y-auto px-3">
         {conversations.length === 0 && (
-          <p className="text-[#666] text-xs text-center mt-8 px-4">
-            No conversations yet. Start a new chat!
-          </p>
+          <div className="text-center mt-16 px-6">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mx-auto mb-3">
+              <MessageSquare size={16} className="text-[#3f3f46]" />
+            </div>
+            <p className="text-[#3f3f46] text-xs leading-relaxed">
+              No conversations yet.
+              <br />
+              Start one above.
+            </p>
+          </div>
         )}
         {conversations.map((conv) => (
           <div
             key={conv.id}
-            className={`group flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer mb-0.5 transition-colors ${
+            className={`group flex items-center gap-2.5 px-3.5 py-3 rounded-xl cursor-pointer mb-1 transition-all duration-200 ${
               conv.id === activeId
-                ? "bg-[#2a2a2a]"
-                : "hover:bg-[#212121]"
+                ? "bg-white/[0.08] border border-white/[0.08]"
+                : "hover:bg-white/[0.04] border border-transparent"
             }`}
             onClick={() => onSelect(conv.id)}
           >
-            <MessageSquare size={14} className="text-[#9a9a9a] shrink-0" />
-            <span className="text-sm truncate flex-1">{conv.title}</span>
+            <span
+              className={`text-sm truncate flex-1 ${
+                conv.id === activeId ? "text-[#fafafa]" : "text-[#a1a1aa]"
+              }`}
+            >
+              {conv.title}
+            </span>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(conv.id);
               }}
-              className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[#333] transition-all"
+              className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-white/[0.08] transition-all duration-200"
             >
-              <Trash2 size={12} className="text-[#666]" />
+              <Trash2 size={12} className="text-[#52525b]" />
             </button>
           </div>
         ))}
       </div>
 
       {/* Memory button */}
-      <div className="p-3 border-t border-[#333]">
+      <div className="p-4 border-t border-white/[0.06]">
         <button
           onClick={onToggleMemory}
-          className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg hover:bg-[#2a2a2a] transition-colors text-sm"
+          className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-white/[0.04] border border-transparent hover:border-white/[0.06] transition-all duration-200 text-sm group"
         >
-          <Brain size={16} className="text-[#10a37f]" />
-          <span>Memories</span>
+          <div className="w-7 h-7 rounded-lg bg-[#a78bfa]/10 flex items-center justify-center group-hover:bg-[#a78bfa]/15 transition-colors">
+            <Brain size={14} className="text-[#a78bfa]" />
+          </div>
+          <span className="text-[#a1a1aa]">Memories</span>
           {memoryCount > 0 && (
-            <span className="ml-auto bg-[#10a37f] text-[#0d0d0d] text-xs font-medium px-1.5 py-0.5 rounded-full">
+            <span className="ml-auto text-[10px] font-semibold bg-[#a78bfa]/15 text-[#a78bfa] px-2 py-0.5 rounded-full">
               {memoryCount}
             </span>
           )}

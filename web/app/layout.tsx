@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OpenConch",
-  description: "AI that remembers. Powered by episodic memory.",
+  title: "OpenConch — AI that remembers",
+  description: "Persistent episodic memory for AI conversations. Pick up where you left off.",
 };
 
 export default function RootLayout({
@@ -13,7 +13,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-[#0d0d0d] text-[#ececec] h-screen overflow-hidden">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="bg-[#09090b] text-[#fafafa] h-screen overflow-hidden noise">
         {children}
       </body>
     </html>
