@@ -74,8 +74,8 @@ export default function Chat({
       {/* ── Content ── */}
       {!conversation || conversation.messages.length === 0 ? (
         /* ── Empty State ── */
-        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8">
-          <div className="anim-fade-in max-w-md w-full text-center">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-12">
+          <div className="anim-fade-in w-full flex flex-col items-center text-center">
             {/* Hero icon */}
             <div
               className="w-[72px] h-[72px] rounded-[20px] mx-auto mb-8 flex items-center justify-center"
@@ -100,19 +100,19 @@ export default function Chat({
 
           {/* Suggestions */}
           <div
-            className="grid grid-cols-2 gap-2.5 max-w-md w-full mt-10 anim-fade-in"
+            className="grid grid-cols-2 gap-3 max-w-lg w-full mt-12 anim-fade-in"
             style={{ animationDelay: '0.12s' }}
           >
             {SUGGESTIONS.map((s) => (
               <button
                 key={s.text}
                 onClick={() => handleSuggestion(s.text)}
-                className="text-left px-4 py-3.5 rounded-xl border border-[var(--border-default)] hover:border-[var(--border-strong)] bg-[var(--surface-0)] hover:bg-[var(--surface-1)] transition-all duration-200 group"
+                className="text-left px-5 py-4 rounded-2xl border border-[var(--border-default)] hover:border-[var(--border-strong)] bg-[var(--surface-0)] hover:bg-[var(--surface-1)] transition-all duration-200 group"
               >
-                <div className="text-[12px] font-semibold text-[var(--text-primary)] mb-0.5 group-hover:text-[var(--accent)] transition-colors" style={{ fontFamily: 'var(--font-display)' }}>
+                <div className="text-[13px] font-semibold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent)] transition-colors" style={{ fontFamily: 'var(--font-display)' }}>
                   {s.label}
                 </div>
-                <div className="text-[12px] text-[var(--text-faint)] leading-snug">
+                <div className="text-[12px] text-[var(--text-faint)] leading-relaxed">
                   {s.sub}
                 </div>
               </button>
