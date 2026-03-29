@@ -9,39 +9,46 @@ interface Props {
 }
 
 export default function MessageList({ messages, isStreaming }: Props) {
-  const endRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  // Smooth scroll that doesn't jank during streaming
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, messages[messages.length - 1]?.content]);
+    const el = containerRef.current;
+    if (el) {
+      requestAnimationFrame(() => {
+        el.scrollTo({ top: el.scrollHeight, behavior: isStreaming ? "instant" : "smooth" });
+      });
+    }
+  }, [messages, messages[messages.length - 1]?.content, isStreaming]);
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className="max-w-[720px] mx-auto px-4 py-6">
+    <div ref={containerRef} className="flex-1 overflow-y-auto">
+      <div className="max-w-[680px] mx-auto px-4 py-6">
         {messages.map((msg, i) => (
-          <div key={msg.id} className="mb-8 last:mb-0 animate-in">
+          <div key={msg.id} className={msg.role === "user" ? "mb-6" : "mb-8"}>
             {msg.role === "user" ? (
-              <div className="flex justify-end mb-1">
-                <div className="bg-[#2f2f2f] rounded-3xl px-5 py-3 max-w-[85%]">
-                  <p className="text-[15px] leading-relaxed text-white whitespace-pre-wrap">{msg.content}</p>
+              <div className="flex justify-end">
+                <div className="bg-[#f0f0f0] rounded-[20px] px-5 py-3 max-w-[80%]">
+                  <p className="text-[16px] leading-[1.6] text-[#0d0d0d] whitespace-pre-wrap">
+                    {msg.content}
+                  </p>
                 </div>
               </div>
             ) : (
-              <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-[#b4a0fb] flex items-center justify-center shrink-0 text-sm font-bold text-white mt-1">
+              <div className="flex gap-4 items-start">
+                <div className="w-[32px] h-[32px] rounded-full bg-[#7c3aed] flex items-center justify-center shrink-0 text-[14px] select-none mt-0.5">
                   🐚
                 </div>
-                <div className="flex-1 min-w-0 pt-1">
-                  <div className="msg-content whitespace-pre-wrap">
+                <div className="flex-1 min-w-0 pt-[2px]">
+                  <div className="prose whitespace-pre-wrap">
                     {msg.content}
-                    {isStreaming && i === messages.length - 1 && <span className="cursor-blink" />}
+                    {isStreaming && i === messages.length - 1 && <span className="typing" />}
                   </div>
                 </div>
               </div>
             )}
           </div>
         ))}
-        <div ref={endRef} />
       </div>
     </div>
   );

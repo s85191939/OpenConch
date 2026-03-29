@@ -3,74 +3,72 @@
 import { Conversation } from "@/lib/types";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
-import { PanelLeft } from "lucide-react";
+import { PanelLeft, SquarePen } from "lucide-react";
 
 interface ChatProps {
   conversation: Conversation | null;
   isStreaming: boolean;
   onSendMessage: (content: string) => void;
   onNewChat: () => void;
+  onGoHome: () => void;
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
 }
 
 export default function Chat({
-  conversation, isStreaming, onSendMessage, onNewChat, sidebarOpen, onToggleSidebar,
+  conversation, isStreaming, onSendMessage, onNewChat, onGoHome, sidebarOpen, onToggleSidebar,
 }: ChatProps) {
   const isEmpty = !conversation || conversation.messages.length === 0;
 
+  const sendStarter = (text: string) => {
+    if (!conversation) onNewChat();
+    setTimeout(() => onSendMessage(text), 80);
+  };
+
   return (
-    <main className="flex-1 flex flex-col h-full bg-[#212121] min-w-0">
+    <main className="flex-1 flex flex-col h-full bg-white min-w-0">
       {/* Header */}
-      <div className="h-11 flex items-center px-4 shrink-0">
-        {!sidebarOpen && (
-          <button onClick={onToggleSidebar} className="p-1.5 rounded-lg hover:bg-[#2a2a2a] mr-2">
-            <PanelLeft size={18} className="text-[#999]" />
-          </button>
-        )}
-        <span className="text-sm font-medium text-[#b4a0fb]">OpenConch</span>
-      </div>
-
-      {/* Content */}
-      {isEmpty ? (
-        <div className="flex-1 flex flex-col items-center justify-center pb-20">
-          <div className="text-center mb-10">
-            <div className="text-5xl mb-6">🐚</div>
-            <h1 className="text-[28px] font-semibold text-white tracking-tight">
-              What can I help with?
-            </h1>
-          </div>
-
-          {/* Input in center for empty state */}
-          <div className="w-full max-w-[720px] px-4">
-            <MessageInput onSend={(text) => {
-              if (!conversation) onNewChat();
-              setTimeout(() => onSendMessage(text), 60);
-            }} disabled={isStreaming} />
-          </div>
-
-          <div className="flex gap-2 mt-6 flex-wrap justify-center px-4">
-            {["What do you remember about me?", "Help me brainstorm", "How does your memory work?"].map((t) => (
-              <button
-                key={t}
-                onClick={() => {
-                  if (!conversation) onNewChat();
-                  setTimeout(() => onSendMessage(t), 60);
-                }}
-                className="px-4 py-2 rounded-full border border-[#383838] text-sm text-[#999] hover:bg-[#2a2a2a] hover:text-white transition-colors"
-              >
-                {t}
+      <header className="h-[56px] flex items-center justify-between px-4 shrink-0">
+        <div className="flex items-center gap-1">
+          {!sidebarOpen && (
+            <>
+              <button onClick={onToggleSidebar} className="w-[36px] h-[36px] flex items-center justify-center rounded-lg hover:bg-black/5 transition-colors cursor-pointer">
+                <PanelLeft size={20} className="text-[#666]" />
               </button>
-            ))}
+              <button onClick={onNewChat} className="w-[36px] h-[36px] flex items-center justify-center rounded-lg hover:bg-black/5 transition-colors cursor-pointer">
+                <SquarePen size={18} className="text-[#666]" />
+              </button>
+            </>
+          )}
+        </div>
+        <button onClick={onGoHome} className="text-[16px] font-semibold text-[#0d0d0d] hover:text-[#7c3aed] transition-colors cursor-pointer select-none">
+          OpenConch
+        </button>
+        <div className="w-[72px]" /> {/* Spacer for centering */}
+      </header>
+
+      {isEmpty ? (
+        /* ── Empty State ── */
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-[80px]">
+          <h1 className="text-[28px] font-semibold text-[#0d0d0d] tracking-[-0.02em] mb-8">
+            Where should we begin?
+          </h1>
+
+          <div className="w-full max-w-[680px]">
+            <MessageInput
+              onSend={(text) => { if (!conversation) onNewChat(); setTimeout(() => onSendMessage(text), 80); }}
+              disabled={isStreaming}
+            />
           </div>
         </div>
       ) : (
+        /* ── Active Conversation ── */
         <>
           <MessageList messages={conversation.messages} isStreaming={isStreaming} />
-          <div className="shrink-0 w-full max-w-[720px] mx-auto px-4 pb-6 pt-2">
+          <div className="shrink-0 w-full max-w-[680px] mx-auto px-4 pb-6 pt-2">
             <MessageInput onSend={onSendMessage} disabled={isStreaming} />
-            <p className="text-[11px] text-[#555] text-center mt-2">
-              OpenConch can make mistakes. Memories stored locally.
+            <p className="text-[11px] text-[#999] text-center mt-3 select-none">
+              OpenConch can make mistakes. Memories stored in your browser.
             </p>
           </div>
         </>

@@ -200,6 +200,7 @@ export default function Home() {
         onDelete={handleDeleteConversation}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         onToggleMemory={() => setMemoryPanelOpen(!memoryPanelOpen)}
+        onGoHome={() => setActiveConversation(null)}
       />
 
       {/* Main chat area */}
@@ -208,6 +209,7 @@ export default function Home() {
         isStreaming={isStreaming}
         onSendMessage={handleSendMessage}
         onNewChat={createNewChat}
+        onGoHome={() => setActiveConversation(null)}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />

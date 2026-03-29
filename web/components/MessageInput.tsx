@@ -15,37 +15,41 @@ export default function MessageInput({ onSend, disabled }: Props) {
   useEffect(() => {
     const el = ref.current;
     if (el) {
-      el.style.height = "auto";
+      el.style.height = "24px";
       el.style.height = Math.min(el.scrollHeight, 200) + "px";
     }
   }, [input]);
 
   const send = () => {
-    const text = input.trim();
-    if (!text || disabled) return;
-    onSend(text);
+    const t = input.trim();
+    if (!t || disabled) return;
+    onSend(t);
     setInput("");
   };
 
+  const active = input.trim().length > 0 && !disabled;
+
   return (
-    <div className="relative bg-[#303030] rounded-3xl border border-[#424242] focus-within:border-[#555] transition-colors shadow-lg">
+    <div className="relative rounded-[24px] bg-[#f4f4f4] border border-[#e5e5e5] focus-within:border-[#c5c5c5] transition-colors shadow-sm">
       <textarea
         ref={ref}
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-        placeholder="Message OpenConch..."
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+        }}
+        placeholder="Ask anything"
         disabled={disabled}
         rows={1}
-        className="w-full bg-transparent text-[15px] text-white placeholder-[#666] pl-5 pr-14 py-3.5 resize-none outline-none max-h-[200px]"
+        className="w-full bg-transparent text-[16px] text-[#0d0d0d] placeholder-[#999] px-6 py-[14px] pr-[52px] resize-none outline-none max-h-[200px] leading-[24px]"
       />
       <button
         onClick={send}
-        disabled={!input.trim() || disabled}
-        className={`absolute right-2 bottom-2 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-          input.trim() && !disabled
-            ? "bg-white text-black hover:bg-gray-200"
-            : "bg-[#424242] text-[#666] cursor-default"
+        disabled={!active}
+        className={`absolute right-2.5 bottom-2.5 w-[32px] h-[32px] rounded-full flex items-center justify-center transition-all cursor-pointer ${
+          active
+            ? "bg-[#0d0d0d] text-white hover:bg-[#333] active:bg-[#555]"
+            : "bg-[#d9d9d9] text-white cursor-default"
         }`}
       >
         <ArrowUp size={16} strokeWidth={2.5} />
