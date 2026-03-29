@@ -22,24 +22,40 @@ export default function MessageList({ messages, isStreaming }: Props) {
   }, [messages, messages[messages.length - 1]?.content, isStreaming]);
 
   return (
-    <div ref={containerRef} className="flex-1 overflow-y-auto">
-      <div className="max-w-[720px] mx-auto px-8 py-8">
+    <div ref={containerRef} style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '32px 40px' }}>
         {messages.map((msg, i) => (
-          <div key={msg.id} className="mb-8 last:mb-0">
+          <div key={msg.id} style={{ marginBottom: 32 }}>
             {msg.role === "user" ? (
-              <div className="flex justify-end">
-                <div className="bg-[#f0f0f0] rounded-[20px] py-[10px] px-[16px] max-w-[75%]">
-                  <p className="text-[17px] leading-[1.45] text-[#1a1a1a] whitespace-pre-wrap">
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <div style={{
+                  background: '#f0f0f0',
+                  borderRadius: 20,
+                  padding: '10px 18px',
+                  maxWidth: '75%',
+                }}>
+                  <p style={{ fontSize: 16, lineHeight: 1.5, color: '#1a1a1a', whiteSpace: 'pre-wrap', margin: 0 }}>
                     {msg.content}
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="flex gap-4 items-start">
-                <div className="w-[34px] h-[34px] rounded-full bg-[#7c3aed] flex items-center justify-center shrink-0 text-[15px] select-none mt-0.5 shadow-sm">
+              <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                <div style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: '50%',
+                  background: '#7c3aed',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  fontSize: 15,
+                  marginTop: 2,
+                }}>
                   🐚
                 </div>
-                <div className="flex-1 min-w-0 pt-1 prose">
+                <div style={{ flex: 1, minWidth: 0, paddingTop: 4 }} className="prose">
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
                   {isStreaming && i === messages.length - 1 && <span className="typing" />}
                 </div>

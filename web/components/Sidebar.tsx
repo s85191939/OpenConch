@@ -25,59 +25,99 @@ export default function Sidebar({
   return (
     <nav className="w-[260px] h-full flex flex-col bg-[#171024] shrink-0">
       {/* Top row */}
-      <div className="h-[56px] flex items-center justify-between px-6 shrink-0">
-        <button onClick={onGoHome} className="p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
-          <span className="text-[20px] select-none">🐚</span>
+      <div style={{ height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 20, paddingRight: 12 }}>
+        <button onClick={onGoHome} style={{ padding: 8, borderRadius: 8, cursor: 'pointer', background: 'none', border: 'none' }}>
+          <span style={{ fontSize: 20 }}>🐚</span>
         </button>
-        <div className="flex items-center gap-0.5">
-          <button onClick={onToggle} className="w-[36px] h-[36px] flex items-center justify-center rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
-            <PanelLeftClose size={18} className="text-white/50" />
+        <div style={{ display: 'flex', gap: 2 }}>
+          <button onClick={onToggle} style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, cursor: 'pointer', background: 'none', border: 'none' }}>
+            <PanelLeftClose size={18} color="rgba(255,255,255,0.5)" />
           </button>
-          <button onClick={onNewChat} className="w-[36px] h-[36px] flex items-center justify-center rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
-            <SquarePen size={18} className="text-white/50" />
+          <button onClick={onNewChat} style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, cursor: 'pointer', background: 'none', border: 'none' }}>
+            <SquarePen size={18} color="rgba(255,255,255,0.5)" />
           </button>
         </div>
       </div>
 
       {/* Conversations */}
-      <div className="flex-1 overflow-y-auto pt-2 px-4">
+      <div style={{ flex: 1, overflowY: 'auto', paddingTop: 8 }}>
         {conversations.length > 0 && (
-          <p className="text-[11px] font-semibold text-white/30 pt-3 pb-2 ml-2 uppercase tracking-wider select-none">Today</p>
+          <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.3)', paddingLeft: 24, paddingTop: 12, paddingBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em', userSelect: 'none' }}>
+            Today
+          </p>
         )}
-        <div className="space-y-0.5">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingLeft: 8, paddingRight: 8 }}>
           {conversations.map((c) => (
             <button
               key={c.id}
               onClick={() => onSelect(c.id)}
-              className={`group w-full flex items-center h-[44px] px-3 rounded-lg text-[14px] text-left cursor-pointer select-none transition-colors ${
-                c.id === activeId
-                  ? "bg-white/[0.12] text-white font-medium"
-                  : "text-white/65 hover:bg-white/[0.06]"
-              }`}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                height: 44,
+                paddingLeft: 16,
+                paddingRight: 12,
+                borderRadius: 8,
+                fontSize: 14,
+                textAlign: 'left' as const,
+                cursor: 'pointer',
+                border: 'none',
+                background: c.id === activeId ? 'rgba(255,255,255,0.12)' : 'transparent',
+                color: c.id === activeId ? '#fff' : 'rgba(255,255,255,0.65)',
+                fontWeight: c.id === activeId ? 500 : 400,
+                transition: 'background 0.15s',
+              }}
+              onMouseEnter={(e) => { if (c.id !== activeId) e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+              onMouseLeave={(e) => { if (c.id !== activeId) e.currentTarget.style.background = 'transparent'; }}
             >
-              <span className="truncate flex-1">{c.title}</span>
-              <span
-                role="button"
-                onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
-                className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-white/10 transition-all cursor-pointer"
-              >
-                <Trash2 size={14} className="text-white/40" />
-              </span>
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title}</span>
             </button>
           ))}
         </div>
       </div>
 
       {/* Bottom */}
-      <div className="px-4 py-3 border-t border-white/[0.08]">
+      <div style={{ padding: '12px 8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
         <button
           onClick={onToggleMemory}
-          className="w-full flex items-center gap-3 h-[44px] px-3 rounded-lg text-[14px] text-white/65 hover:bg-white/[0.06] cursor-pointer select-none transition-colors"
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            height: 44,
+            paddingLeft: 16,
+            paddingRight: 12,
+            borderRadius: 8,
+            fontSize: 14,
+            color: 'rgba(255,255,255,0.65)',
+            cursor: 'pointer',
+            border: 'none',
+            background: 'transparent',
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
-          <Brain size={18} className="text-[#a78bfa]" />
+          <Brain size={18} color="#a78bfa" />
           Memory
           {memoryCount > 0 && (
-            <span className="ml-auto text-[11px] font-semibold bg-[#a78bfa]/20 text-[#a78bfa] min-w-[22px] h-[22px] flex items-center justify-center rounded-full px-1.5">
+            <span style={{
+              marginLeft: 'auto',
+              fontSize: 11,
+              fontWeight: 600,
+              background: 'rgba(167,139,250,0.2)',
+              color: '#a78bfa',
+              minWidth: 22,
+              height: 22,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 999,
+              paddingLeft: 6,
+              paddingRight: 6,
+            }}>
               {memoryCount}
             </span>
           )}
