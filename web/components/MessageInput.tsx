@@ -30,7 +30,19 @@ export default function MessageInput({ onSend, disabled }: Props) {
   const active = input.trim().length > 0 && !disabled;
 
   return (
-    <div className="flex items-center gap-2 rounded-full bg-[#f4f4f4] border border-[#e0e0e0] focus-within:border-[#c0c0c0] transition-colors h-[48px] pl-6 pr-2">
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        borderRadius: 9999,
+        backgroundColor: "#f4f4f4",
+        border: "1px solid #e0e0e0",
+        height: 52,
+        paddingLeft: 24,
+        paddingRight: 10,
+      }}
+    >
       <textarea
         ref={ref}
         value={input}
@@ -41,17 +53,38 @@ export default function MessageInput({ onSend, disabled }: Props) {
         placeholder="Ask anything..."
         disabled={disabled}
         rows={1}
-        className="flex-1 bg-transparent text-[16px] text-[#1a1a1a] placeholder-[#999] resize-none outline-none leading-[24px] py-0 self-center"
-        style={{ height: "24px", maxHeight: "200px" }}
+        style={{
+          flex: 1,
+          background: "transparent",
+          fontSize: 16,
+          color: "#1a1a1a",
+          resize: "none",
+          outline: "none",
+          lineHeight: "24px",
+          height: 24,
+          maxHeight: 200,
+          border: "none",
+          padding: 0,
+          fontFamily: "inherit",
+        }}
       />
       <button
         onClick={send}
         disabled={!active}
-        className={`w-[34px] h-[34px] rounded-full flex items-center justify-center shrink-0 transition-colors ${
-          active
-            ? "bg-[#1a1a1a] text-white hover:bg-[#333] cursor-pointer"
-            : "bg-[#d4d4d4] text-white cursor-default"
-        }`}
+        style={{
+          width: 34,
+          height: 34,
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          border: "none",
+          cursor: active ? "pointer" : "default",
+          backgroundColor: active ? "#1a1a1a" : "#d4d4d4",
+          color: "white",
+          transition: "background-color 0.15s",
+        }}
       >
         <ArrowUp size={16} strokeWidth={2.5} />
       </button>
