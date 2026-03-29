@@ -44,6 +44,7 @@ export default function Chat({
 
       {isEmpty ? (
         <div className="flex-1 flex flex-col items-center justify-center px-6 pb-[80px]">
+          <div style={{ fontSize: 72, marginBottom: 16, lineHeight: 1 }}>🐚</div>
           <h1 className="text-[30px] font-semibold text-gray-900 tracking-[-0.02em] mb-10">
             Where should we begin?
           </h1>

@@ -118,17 +118,23 @@ export default function Home() {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
 
       if (reader) {
         let fullText = "";
+        let buffer = "";
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
-          const chunk = decoder.decode(value);
-          const lines = chunk.split("\n");
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
 
           for (const line of lines) {
             if (line.startsWith("data: ")) {
@@ -136,6 +142,9 @@ export default function Home() {
               if (data === "[DONE]") continue;
               try {
                 const parsed = JSON.parse(data);
+                if (parsed.error) {
+                  throw new Error(parsed.error);
+                }
                 if (parsed.text) {
                   fullText += parsed.text;
                   assistantMessage.content = fullText;
@@ -147,9 +156,16 @@ export default function Home() {
                   };
                   setActiveConversation(withAssistant);
                 }
-              } catch { /* skip malformed chunks */ }
+              } catch (e) {
+                if (e instanceof SyntaxError) continue;
+                throw e;
+              }
             }
           }
+        }
+
+        if (!fullText) {
+          throw new Error("No response received from AI");
         }
 
         // Save final state
