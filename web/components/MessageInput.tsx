@@ -30,7 +30,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
   const active = input.trim().length > 0 && !disabled;
 
   return (
-    <div className="flex items-center gap-2 rounded-full bg-[#f4f4f4] border border-[#e0e0e0] focus-within:border-[#c0c0c0] transition-colors h-[48px] pl-5 pr-[7px]">
+    <div className="flex items-center gap-2 rounded-full bg-[#f4f4f4] border border-[#e0e0e0] focus-within:border-[#c0c0c0] transition-colors h-[48px] pl-6 pr-2">
       <textarea
         ref={ref}
         value={input}
