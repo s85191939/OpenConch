@@ -28,8 +28,8 @@ export default function MessageList({ messages, isStreaming }: Props) {
           <div key={msg.id} className="mb-8 last:mb-0">
             {msg.role === "user" ? (
               <div className="flex justify-end">
-                <div className="bg-[#f0f0f0] rounded-[24px] px-6 py-3 max-w-[75%]">
-                  <p className="text-[16px] leading-[1.7] text-[#1a1a1a] whitespace-pre-wrap">
+                <div className="bg-[#f0f0f0] rounded-[20px] py-[10px] px-[16px] max-w-[75%]">
+                  <p className="text-[17px] leading-[1.45] text-[#1a1a1a] whitespace-pre-wrap">
                     {msg.content}
                   </p>
                 </div>
