@@ -14,129 +14,67 @@ interface ChatProps {
   onToggleSidebar: () => void;
 }
 
-const SUGGESTIONS = [
-  {
-    text: "What do you remember about me?",
-    label: "Recall",
-    sub: "Search your memory",
-  },
-  {
-    text: "Help me think through a problem",
-    label: "Reason",
-    sub: "Step-by-step thinking",
-  },
-  {
-    text: "Tell me about your memory system",
-    label: "Explore",
-    sub: "How OpenConch works",
-  },
-  {
-    text: "I want to learn something new today",
-    label: "Learn",
-    sub: "Discover and grow",
-  },
-];
-
 export default function Chat({
-  conversation,
-  isStreaming,
-  onSendMessage,
-  onNewChat,
-  sidebarOpen,
-  onToggleSidebar,
+  conversation, isStreaming, onSendMessage, onNewChat, sidebarOpen, onToggleSidebar,
 }: ChatProps) {
-  const handleSuggestion = (text: string) => {
-    if (!conversation) onNewChat();
-    setTimeout(() => onSendMessage(text), 60);
-  };
+  const isEmpty = !conversation || conversation.messages.length === 0;
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[var(--void)] min-w-0">
-      {/* ── Top Bar ── */}
-      <header className="h-[52px] flex items-center px-5 border-b border-[var(--border-subtle)] shrink-0">
+    <main className="flex-1 flex flex-col h-full bg-[#212121] min-w-0">
+      {/* Header */}
+      <div className="h-11 flex items-center px-4 shrink-0">
         {!sidebarOpen && (
-          <button
-            onClick={onToggleSidebar}
-            className="p-2 -ml-1 mr-2 rounded-lg hover:bg-[var(--surface-1)] transition-colors duration-150"
-            aria-label="Open sidebar"
-          >
-            <PanelLeft size={16} className="text-[var(--text-tertiary)]" />
+          <button onClick={onToggleSidebar} className="p-1.5 rounded-lg hover:bg-[#2a2a2a] mr-2">
+            <PanelLeft size={18} className="text-[#999]" />
           </button>
         )}
-        <div className="flex items-center gap-2">
-          <span className="text-[13px] font-semibold gradient-text select-none" style={{ fontFamily: 'var(--font-display)' }}>
-            OpenConch
-          </span>
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
-        </div>
-      </header>
+        <span className="text-sm font-medium text-[#b4a0fb]">OpenConch</span>
+      </div>
 
-      {/* ── Content ── */}
-      {!conversation || conversation.messages.length === 0 ? (
-        /* ── Empty State ── */
-        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-12">
-          <div className="anim-fade-in w-full flex flex-col items-center text-center">
-            {/* Hero icon */}
-            <div
-              className="w-[72px] h-[72px] rounded-[20px] mx-auto mb-8 flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(145deg, var(--surface-2), var(--surface-1))',
-                boxShadow: '0 0 0 1px var(--border-default), 0 8px 40px rgba(155, 138, 251, 0.08)',
-              }}
-            >
-              <span className="text-[32px]" style={{ animation: 'float 4s ease-in-out infinite' }}>🐚</span>
-            </div>
-
-            <h1
-              className="text-[28px] font-bold tracking-[-0.03em] mb-3 text-[var(--text-primary)]"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
-              {getGreeting()}
+      {/* Content */}
+      {isEmpty ? (
+        <div className="flex-1 flex flex-col items-center justify-center pb-20">
+          <div className="text-center mb-10">
+            <div className="text-5xl mb-6">🐚</div>
+            <h1 className="text-[28px] font-semibold text-white tracking-tight">
+              What can I help with?
             </h1>
-            <p className="text-[var(--text-tertiary)] text-[15px] leading-relaxed max-w-xs mx-auto">
-              I remember your conversations. Ask anything&mdash;I&apos;ll pick up where we left off.
-            </p>
           </div>
 
-          {/* Suggestions */}
-          <div
-            className="grid grid-cols-2 gap-3 max-w-lg w-full mt-12 anim-fade-in"
-            style={{ animationDelay: '0.12s' }}
-          >
-            {SUGGESTIONS.map((s) => (
+          {/* Input in center for empty state */}
+          <div className="w-full max-w-[720px] px-4">
+            <MessageInput onSend={(text) => {
+              if (!conversation) onNewChat();
+              setTimeout(() => onSendMessage(text), 60);
+            }} disabled={isStreaming} />
+          </div>
+
+          <div className="flex gap-2 mt-6 flex-wrap justify-center px-4">
+            {["What do you remember about me?", "Help me brainstorm", "How does your memory work?"].map((t) => (
               <button
-                key={s.text}
-                onClick={() => handleSuggestion(s.text)}
-                className="text-left px-5 py-4 rounded-2xl border border-[var(--border-default)] hover:border-[var(--border-strong)] bg-[var(--surface-0)] hover:bg-[var(--surface-1)] transition-all duration-200 group"
+                key={t}
+                onClick={() => {
+                  if (!conversation) onNewChat();
+                  setTimeout(() => onSendMessage(t), 60);
+                }}
+                className="px-4 py-2 rounded-full border border-[#383838] text-sm text-[#999] hover:bg-[#2a2a2a] hover:text-white transition-colors"
               >
-                <div className="text-[13px] font-semibold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent)] transition-colors" style={{ fontFamily: 'var(--font-display)' }}>
-                  {s.label}
-                </div>
-                <div className="text-[12px] text-[var(--text-faint)] leading-relaxed">
-                  {s.sub}
-                </div>
+                {t}
               </button>
             ))}
           </div>
         </div>
       ) : (
-        <MessageList messages={conversation.messages} isStreaming={isStreaming} />
+        <>
+          <MessageList messages={conversation.messages} isStreaming={isStreaming} />
+          <div className="shrink-0 w-full max-w-[720px] mx-auto px-4 pb-6 pt-2">
+            <MessageInput onSend={onSendMessage} disabled={isStreaming} />
+            <p className="text-[11px] text-[#555] text-center mt-2">
+              OpenConch can make mistakes. Memories stored locally.
+            </p>
+          </div>
+        </>
       )}
-
-      {/* ── Input Area ── */}
-      <div className="shrink-0 px-4 sm:px-6 pb-5 pt-2">
-        <MessageInput onSend={onSendMessage} disabled={isStreaming} />
-        <p className="text-[11px] text-[var(--text-faint)] text-center mt-3 select-none">
-          OpenConch remembers across conversations &middot; Stored locally
-        </p>
-      </div>
-    </div>
+    </main>
   );
-}
-
-function getGreeting(): string {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning.";
-  if (h < 18) return "Good afternoon.";
-  return "Good evening.";
 }
