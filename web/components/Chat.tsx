@@ -47,14 +47,14 @@ export default function Chat({
           <h1 className="text-[30px] font-semibold text-gray-900 tracking-[-0.02em] mb-10">
             Where should we begin?
           </h1>
-          <div className="w-full max-w-[680px]">
+          <div className="w-full max-w-[680px] px-4">
             <MessageInput onSend={onSendMessage} disabled={isStreaming} />
           </div>
         </div>
       ) : (
         <>
           <MessageList messages={conversation.messages} isStreaming={isStreaming} />
-          <div className="shrink-0 w-full max-w-[680px] mx-auto px-6 pb-6 pt-2">
+          <div className="shrink-0 w-full max-w-[680px] mx-auto px-10 pb-6 pt-2">
             <MessageInput onSend={onSendMessage} disabled={isStreaming} />
             <p className="text-[11px] text-gray-400 text-center mt-3 select-none">
               OpenConch can make mistakes. Memories stored in your browser.
