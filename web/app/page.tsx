@@ -14,11 +14,12 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [memoryPanelOpen, setMemoryPanelOpen] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [memories, setMemories] = useState<ReturnType<typeof getAllMemories>>([]);
 
-  // Load conversations from localStorage
+  // Load conversations and memories from localStorage (client only)
   useEffect(() => {
-    const saved = getConversations();
-    setConversations(saved);
+    setConversations(getConversations());
+    setMemories(getAllMemories());
   }, []);
 
   const createNewChat = useCallback(() => {
@@ -169,6 +170,7 @@ export default function Home() {
           for (const fact of facts) {
             createMemory(fact);
           }
+          setMemories(getAllMemories());
         } catch { /* memory extraction is best-effort */ }
       }
     } catch (error) {
@@ -192,7 +194,7 @@ export default function Home() {
         conversations={conversations}
         activeId={activeConversation?.id}
         isOpen={sidebarOpen}
-        memoryCount={getAllMemories().length}
+        memoryCount={memories.length}
         onNewChat={createNewChat}
         onSelect={handleSelectConversation}
         onDelete={handleDeleteConversation}
@@ -214,8 +216,8 @@ export default function Home() {
       <MemoryPanel
         isOpen={memoryPanelOpen}
         onClose={() => setMemoryPanelOpen(false)}
-        memories={getAllMemories()}
-        onDelete={removeMemory}
+        memories={memories}
+        onDelete={(id: string) => { removeMemory(id); setMemories(getAllMemories()); }}
       />
     </div>
   );

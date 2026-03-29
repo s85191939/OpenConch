@@ -1,7 +1,7 @@
 "use client";
 
 import { MemoryEntry } from "@/lib/types";
-import { X, Trash2, Brain, Zap } from "lucide-react";
+import { X, Trash2, Brain, Sparkles } from "lucide-react";
 
 interface MemoryPanelProps {
   isOpen: boolean;
@@ -18,124 +18,117 @@ export default function MemoryPanel({
 }: MemoryPanelProps) {
   if (!isOpen) return null;
 
-  const getSalienceColor = (salience: number) => {
-    if (salience >= 0.7) return "bg-[#a78bfa]";
-    if (salience >= 0.4) return "bg-amber-500";
-    return "bg-[#52525b]";
-  };
-
-  const getSalienceLabel = (salience: number) => {
-    if (salience >= 0.7) return "High";
-    if (salience >= 0.4) return "Medium";
-    return "Low";
+  const getSalienceBar = (salience: number) => {
+    const pct = Math.round(salience * 100);
+    if (salience >= 0.7) return { color: 'var(--accent)', label: 'High', bg: 'var(--accent-soft)' };
+    if (salience >= 0.4) return { color: '#f59e0b', label: 'Mid', bg: 'rgba(245,158,11,0.1)' };
+    return { color: 'var(--text-faint)', label: 'Low', bg: 'var(--surface-2)' };
   };
 
   const formatTime = (timestamp: number) => {
     const diff = Date.now() - timestamp;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return "just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
+    const min = Math.floor(diff / 60000);
+    const hr = Math.floor(diff / 3600000);
+    const day = Math.floor(diff / 86400000);
+    if (min < 1) return "Just now";
+    if (min < 60) return `${min}m ago`;
+    if (hr < 24) return `${hr}h ago`;
+    if (day < 7) return `${day}d ago`;
+    return new Date(timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
   return (
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
+        className="fixed inset-0 bg-black/50 backdrop-blur-[2px] z-40"
         onClick={onClose}
+        style={{ animation: 'fadeIn 0.2s ease-out' }}
       />
 
       {/* Panel */}
-      <div className="fixed right-0 top-0 h-full w-[400px] bg-[#0c0c0e] border-l border-white/[0.06] z-50 flex flex-col animate-fade-in-up">
+      <div
+        className="fixed right-0 top-0 h-full w-full sm:w-[420px] bg-[var(--surface-0)] border-l border-[var(--border-subtle)] z-50 flex flex-col anim-slide-right"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between px-6 h-[60px] border-b border-[var(--border-subtle)] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#a78bfa]/10 flex items-center justify-center">
-              <Brain size={16} className="text-[#a78bfa]" />
-            </div>
-            <div>
-              <h2 className="font-semibold text-[15px]">Memories</h2>
-              <p className="text-[11px] text-[#52525b]">{memories.length} stored</p>
-            </div>
+            <Brain size={16} className="text-[var(--accent)]" />
+            <h2 className="text-[14px] font-semibold text-[var(--text-primary)]" style={{ fontFamily: 'var(--font-display)' }}>
+              Memory
+            </h2>
+            <span className="text-[11px] tabular-nums text-[var(--text-faint)] bg-[var(--surface-2)] px-2 py-0.5 rounded-md">
+              {memories.length}
+            </span>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-white/[0.06] transition-colors duration-200"
+            className="p-2 -mr-1 rounded-lg hover:bg-[var(--surface-2)] transition-colors duration-150"
+            aria-label="Close"
           >
-            <X size={16} className="text-[#52525b]" />
+            <X size={15} className="text-[var(--text-tertiary)]" />
           </button>
         </div>
 
-        {/* Memory list */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+        {/* Memory List */}
+        <div className="flex-1 overflow-y-auto px-4 py-4">
           {memories.length === 0 && (
-            <div className="text-center mt-20">
-              <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mx-auto mb-4">
-                <Brain size={24} className="text-[#27272a]" />
+            <div className="flex flex-col items-center justify-center pt-24 text-center px-8">
+              <div className="w-12 h-12 rounded-2xl bg-[var(--surface-1)] border border-[var(--border-default)] flex items-center justify-center mb-4">
+                <Sparkles size={18} className="text-[var(--text-faint)]" />
               </div>
-              <p className="text-[#52525b] text-sm font-medium">No memories yet</p>
-              <p className="text-[#3f3f46] text-xs mt-1.5 max-w-[200px] mx-auto leading-relaxed">
-                Start chatting and I&apos;ll remember the important things.
+              <p className="text-[13px] font-medium text-[var(--text-tertiary)] mb-1">No memories yet</p>
+              <p className="text-[12px] text-[var(--text-faint)] leading-relaxed max-w-[200px]">
+                As you chat, important details will be stored here automatically.
               </p>
             </div>
           )}
 
-          {memories.map((memory, idx) => (
-            <div
-              key={memory.id}
-              className="group bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.08] rounded-2xl p-4 transition-all duration-300 hover:bg-white/[0.03] animate-fade-in-up"
-              style={{ animationDelay: `${idx * 0.03}s` }}
-            >
-              <div className="flex items-start gap-3">
-                {/* Salience dot */}
-                <div className="mt-1">
-                  <div
-                    className={`w-2 h-2 rounded-full ${getSalienceColor(memory.salience)}`}
-                  />
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] leading-relaxed text-[#d4d4d8]">
+          <div className="space-y-2">
+            {memories.map((memory, idx) => {
+              const salience = getSalienceBar(memory.salience);
+              return (
+                <div
+                  key={memory.id}
+                  className="group relative bg-[var(--surface-1)] border border-[var(--border-subtle)] hover:border-[var(--border-default)] rounded-xl p-4 transition-all duration-200 anim-fade-in"
+                  style={{ animationDelay: `${idx * 0.04}s` }}
+                >
+                  <p className="text-[13px] leading-[1.65] text-[var(--text-secondary)] pr-6">
                     {memory.content}
                   </p>
-                  <div className="flex items-center gap-2 mt-2.5">
-                    <span className="text-[10px] text-[#52525b]">
+
+                  {/* Meta row */}
+                  <div className="flex items-center gap-3 mt-3">
+                    <span className="text-[10px] text-[var(--text-faint)]">
                       {formatTime(memory.createdAt)}
                     </span>
-                    <span className="text-[#27272a]">·</span>
-                    <div className="flex items-center gap-1">
-                      <Zap size={9} className={`${memory.salience >= 0.7 ? "text-[#a78bfa]" : "text-[#52525b]"}`} />
-                      <span className={`text-[10px] ${memory.salience >= 0.7 ? "text-[#a78bfa]" : "text-[#52525b]"}`}>
-                        {getSalienceLabel(memory.salience)}
-                      </span>
+                    <div
+                      className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium"
+                      style={{ background: salience.bg, color: salience.color }}
+                    >
+                      <div className="w-1 h-1 rounded-full" style={{ background: salience.color }} />
+                      {salience.label}
                     </div>
                   </div>
-                </div>
 
-                {/* Delete */}
-                <button
-                  onClick={() => onDelete(memory.id)}
-                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-white/[0.08] transition-all duration-200 shrink-0"
-                >
-                  <Trash2 size={12} className="text-[#52525b]" />
-                </button>
-              </div>
-            </div>
-          ))}
+                  {/* Delete */}
+                  <button
+                    onClick={() => onDelete(memory.id)}
+                    className="absolute top-3 right-3 p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-[var(--surface-3)] transition-all duration-150"
+                    aria-label="Delete memory"
+                  >
+                    <Trash2 size={11} className="text-[var(--text-faint)]" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-white/[0.06]">
-          <p className="text-[10px] text-[#3f3f46] text-center leading-relaxed">
-            Memories are extracted from conversations and stored in your browser.
-            <br />
-            High salience memories are prioritized in context.
+        <div className="px-6 py-4 border-t border-[var(--border-subtle)] shrink-0">
+          <p className="text-[11px] text-[var(--text-faint)] leading-relaxed text-center">
+            Memories are extracted from conversations and stored locally in your browser.
           </p>
         </div>
       </div>
