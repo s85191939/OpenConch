@@ -23,61 +23,61 @@ export default function Sidebar({
   if (!isOpen) return null;
 
   return (
-    <nav className="w-[260px] h-full flex flex-col bg-[#f9f9f9] shrink-0 border-r border-[#e5e5e5]">
-      {/* Top row: logo + new chat + collapse */}
-      <div className="h-[56px] flex items-center justify-between px-3 shrink-0">
-        <button onClick={onGoHome} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-black/5 active:bg-black/8 transition-colors cursor-pointer">
-          <span className="text-[18px] select-none">🐚</span>
+    <nav className="w-[260px] h-full flex flex-col bg-[#171024] shrink-0">
+      {/* Top row */}
+      <div className="h-[56px] flex items-center justify-between px-4 shrink-0">
+        <button onClick={onGoHome} className="p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
+          <span className="text-[20px] select-none">🐚</span>
         </button>
-        <div className="flex items-center gap-1">
-          <button onClick={onToggle} className="w-[34px] h-[34px] flex items-center justify-center rounded-lg hover:bg-black/5 transition-colors cursor-pointer">
-            <PanelLeftClose size={18} className="text-[#999]" />
+        <div className="flex items-center gap-0.5">
+          <button onClick={onToggle} className="w-[36px] h-[36px] flex items-center justify-center rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
+            <PanelLeftClose size={18} className="text-white/50" />
           </button>
-          <button onClick={onNewChat} className="w-[34px] h-[34px] flex items-center justify-center rounded-lg hover:bg-black/5 transition-colors cursor-pointer">
-            <SquarePen size={18} className="text-[#999]" />
+          <button onClick={onNewChat} className="w-[36px] h-[36px] flex items-center justify-center rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
+            <SquarePen size={18} className="text-white/50" />
           </button>
         </div>
       </div>
 
-      {/* Nav items */}
-      <div className="flex-1 overflow-y-auto px-2 pt-1">
+      {/* Conversations */}
+      <div className="flex-1 overflow-y-auto px-4 pt-2">
         {conversations.length > 0 && (
-          <p className="text-[11px] font-semibold text-[#999] px-3 pt-4 pb-2 select-none">
-            Today
-          </p>
+          <p className="text-[11px] font-semibold text-white/30 px-4 pt-3 pb-2 uppercase tracking-wider select-none">Today</p>
         )}
-        {conversations.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => onSelect(c.id)}
-            className={`group w-full flex items-center h-[40px] px-3 rounded-lg text-[14px] text-left transition-colors cursor-pointer select-none mb-[1px] ${
-              c.id === activeId
-                ? "bg-black/8 text-[#0d0d0d] font-medium"
-                : "text-[#374151] hover:bg-black/5"
-            }`}
-          >
-            <span className="truncate flex-1">{c.title}</span>
-            <span
-              role="button"
-              onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
-              className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-black/10 transition-all cursor-pointer"
+        <div className="space-y-0.5">
+          {conversations.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => onSelect(c.id)}
+              className={`group w-full flex items-center h-[44px] px-4 rounded-lg text-[14px] text-left cursor-pointer select-none transition-colors ${
+                c.id === activeId
+                  ? "bg-white/[0.12] text-white font-medium"
+                  : "text-white/65 hover:bg-white/[0.06]"
+              }`}
             >
-              <Trash2 size={14} className="text-[#999]" />
-            </span>
-          </button>
-        ))}
+              <span className="truncate flex-1">{c.title}</span>
+              <span
+                role="button"
+                onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
+                className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-white/10 transition-all cursor-pointer"
+              >
+                <Trash2 size={14} className="text-white/40" />
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Bottom */}
-      <div className="px-2 py-2 border-t border-[#e5e5e5]">
+      <div className="px-4 py-3 border-t border-white/[0.08]">
         <button
           onClick={onToggleMemory}
-          className="w-full flex items-center gap-3 h-[40px] px-3 rounded-lg text-[14px] text-[#374151] hover:bg-black/5 transition-colors cursor-pointer select-none"
+          className="w-full flex items-center gap-3 h-[44px] px-4 rounded-lg text-[14px] text-white/65 hover:bg-white/[0.06] cursor-pointer select-none transition-colors"
         >
-          <Brain size={18} className="text-[#7c3aed]" />
+          <Brain size={18} className="text-[#a78bfa]" />
           Memory
           {memoryCount > 0 && (
-            <span className="ml-auto text-[11px] font-semibold bg-[#7c3aed]/10 text-[#7c3aed] min-w-[20px] h-[20px] flex items-center justify-center rounded-full px-1.5">
+            <span className="ml-auto text-[11px] font-semibold bg-[#a78bfa]/20 text-[#a78bfa] min-w-[22px] h-[22px] flex items-center justify-center rounded-full px-1.5">
               {memoryCount}
             </span>
           )}

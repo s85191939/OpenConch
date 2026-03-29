@@ -15,7 +15,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
   useEffect(() => {
     const el = ref.current;
     if (el) {
-      el.style.height = "24px";
+      el.style.height = "28px";
       el.style.height = Math.min(el.scrollHeight, 200) + "px";
     }
   }, [input]);
@@ -30,7 +30,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
   const active = input.trim().length > 0 && !disabled;
 
   return (
-    <div className="relative rounded-[24px] bg-[#f4f4f4] border border-[#e5e5e5] focus-within:border-[#c5c5c5] transition-colors shadow-sm">
+    <div className="flex items-end gap-3 rounded-[28px] bg-[#f4f4f4] px-6 py-4 border border-transparent focus-within:border-gray-300 transition-colors">
       <textarea
         ref={ref}
         value={input}
@@ -38,21 +38,21 @@ export default function MessageInput({ onSend, disabled }: Props) {
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
         }}
-        placeholder="Ask anything"
+        placeholder="Ask anything..."
         disabled={disabled}
         rows={1}
-        className="w-full bg-transparent text-[16px] text-[#0d0d0d] placeholder-[#999] px-6 py-[14px] pr-[52px] resize-none outline-none max-h-[200px] leading-[24px]"
+        className="flex-1 bg-transparent text-[16px] text-gray-900 placeholder-gray-400 resize-none outline-none max-h-[200px] leading-[28px]"
       />
       <button
         onClick={send}
         disabled={!active}
-        className={`absolute right-2.5 bottom-2.5 w-[32px] h-[32px] rounded-full flex items-center justify-center transition-all cursor-pointer ${
+        className={`w-[36px] h-[36px] rounded-full flex items-center justify-center shrink-0 transition-colors ${
           active
-            ? "bg-[#0d0d0d] text-white hover:bg-[#333] active:bg-[#555]"
-            : "bg-[#d9d9d9] text-white cursor-default"
+            ? "bg-black text-white hover:bg-gray-800 cursor-pointer"
+            : "bg-gray-300 text-white cursor-default"
         }`}
       >
-        <ArrowUp size={16} strokeWidth={2.5} />
+        <ArrowUp size={18} strokeWidth={2.5} />
       </button>
     </div>
   );

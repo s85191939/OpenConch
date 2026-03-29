@@ -47,7 +47,19 @@ export default function Home() {
   }, [activeConversation]);
 
   const handleSendMessage = useCallback(async (content: string) => {
-    if (!activeConversation || isStreaming) return;
+    if (isStreaming) return;
+
+    // Auto-create conversation if none active
+    let conv = activeConversation;
+    if (!conv) {
+      conv = {
+        id: crypto.randomUUID(),
+        title: "New chat",
+        messages: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+    }
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -58,8 +70,8 @@ export default function Home() {
 
     // Update conversation with user message
     const updated = {
-      ...activeConversation,
-      messages: [...activeConversation.messages, userMessage],
+      ...conv,
+      messages: [...conv.messages, userMessage],
       updatedAt: Date.now(),
     };
 

@@ -20,54 +20,43 @@ export default function Chat({
 }: ChatProps) {
   const isEmpty = !conversation || conversation.messages.length === 0;
 
-  const sendStarter = (text: string) => {
-    if (!conversation) onNewChat();
-    setTimeout(() => onSendMessage(text), 80);
-  };
-
   return (
     <main className="flex-1 flex flex-col h-full bg-white min-w-0">
       {/* Header */}
-      <header className="h-[56px] flex items-center justify-between px-4 shrink-0">
+      <header className="h-[56px] flex items-center justify-between px-5 shrink-0 border-b border-gray-100">
         <div className="flex items-center gap-1">
           {!sidebarOpen && (
             <>
-              <button onClick={onToggleSidebar} className="w-[36px] h-[36px] flex items-center justify-center rounded-lg hover:bg-black/5 transition-colors cursor-pointer">
-                <PanelLeft size={20} className="text-[#666]" />
+              <button onClick={onToggleSidebar} className="w-[36px] h-[36px] flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                <PanelLeft size={20} className="text-gray-500" />
               </button>
-              <button onClick={onNewChat} className="w-[36px] h-[36px] flex items-center justify-center rounded-lg hover:bg-black/5 transition-colors cursor-pointer">
-                <SquarePen size={18} className="text-[#666]" />
+              <button onClick={onNewChat} className="w-[36px] h-[36px] flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                <SquarePen size={18} className="text-gray-500" />
               </button>
             </>
           )}
         </div>
-        <button onClick={onGoHome} className="text-[16px] font-semibold text-[#0d0d0d] hover:text-[#7c3aed] transition-colors cursor-pointer select-none">
+        <button onClick={onGoHome} className="text-[16px] font-semibold text-gray-900 hover:text-[#7c3aed] transition-colors cursor-pointer select-none">
           OpenConch
         </button>
-        <div className="w-[72px]" /> {/* Spacer for centering */}
+        <div className="w-[72px]" />
       </header>
 
       {isEmpty ? (
-        /* ── Empty State ── */
         <div className="flex-1 flex flex-col items-center justify-center px-6 pb-[80px]">
-          <h1 className="text-[28px] font-semibold text-[#0d0d0d] tracking-[-0.02em] mb-8">
+          <h1 className="text-[30px] font-semibold text-gray-900 tracking-[-0.02em] mb-10">
             Where should we begin?
           </h1>
-
           <div className="w-full max-w-[680px]">
-            <MessageInput
-              onSend={(text) => { if (!conversation) onNewChat(); setTimeout(() => onSendMessage(text), 80); }}
-              disabled={isStreaming}
-            />
+            <MessageInput onSend={onSendMessage} disabled={isStreaming} />
           </div>
         </div>
       ) : (
-        /* ── Active Conversation ── */
         <>
           <MessageList messages={conversation.messages} isStreaming={isStreaming} />
-          <div className="shrink-0 w-full max-w-[680px] mx-auto px-4 pb-6 pt-2">
+          <div className="shrink-0 w-full max-w-[680px] mx-auto px-6 pb-6 pt-2">
             <MessageInput onSend={onSendMessage} disabled={isStreaming} />
-            <p className="text-[11px] text-[#999] text-center mt-3 select-none">
+            <p className="text-[11px] text-gray-400 text-center mt-3 select-none">
               OpenConch can make mistakes. Memories stored in your browser.
             </p>
           </div>
